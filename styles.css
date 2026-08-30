@@ -503,6 +503,7 @@ button:active {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: center;
 }
 
 .save-score {
@@ -586,15 +587,17 @@ button:active {
 }
 
 .leaderboard-modal__header {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
   margin-bottom: 16px;
 }
 
 .leaderboard-modal__header h2 {
   margin: 0;
+  text-align: center;
   color: var(--gold);
   font-size: 1.25rem;
   letter-spacing: 0.08em;
@@ -602,6 +605,8 @@ button:active {
 }
 
 .close-leaderboard {
+  position: absolute;
+  right: 0;
   width: 34px;
   height: 34px;
   padding: 0;
