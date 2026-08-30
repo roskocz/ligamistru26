@@ -42,8 +42,17 @@ const LEADERBOARD_KEY = "cl-kit-quiz-leaderboard";
 const SUPABASE_URL = "https://wlupiolmqtuotnfoeanj.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_SbambzuzeMD5cnAxeaGZBA_EPhA5Ji2";
 const USE_SUPABASE = SUPABASE_URL && SUPABASE_URL !== "https://YOUR_PROJECT_REF.supabase.co" && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+const translations = {
+  cs: {
+    gameTitle: "Fotbalový kvíz", score: "Skóre", lives: "Životy", round: "Kolo", guessPrompt: "Uhodni klub podle dresu.", nextRound: "Další kolo", endGame: "Konec hry", yourScore: "Tvoje skóre", enterName: "Zadej jméno", yourName: "Tvoje jméno", save: "Uložit", playAgain: "Hrát znovu", closeLeaderboard: "Zavřít leaderboard", closeSurprise: "Zavřít překvapení", showLeaderboard: "Zobrazit leaderboard", leaderboard: "Leaderboard", czechLanguage: "Čeština", englishLanguage: "Angličtina", secretFind: "Tajný úlovek", vikingMessage: "Haaland je připraven na další kolo.", wrongAnswer: "Špatně. Správná odpověď byla {team}.", correctAnswer: "Správně! {team} byl ten pravý klub.", enterNameToSave: "Zadej jméno, abys mohl uložit výsledek.", scoreSaved: "Výsledek uložen! {name} má {score} bodů.", kitPreview: "Náhled dresu", jersey: "dres", soccerBall: "Fotbalový míč", redCard: "Červená karta"
+  },
+  en: {
+    gameTitle: "Football quiz", score: "Score", lives: "Lives", round: "Round", guessPrompt: "Guess the club from its kit.", nextRound: "Next round", endGame: "Game over", yourScore: "Your score", enterName: "Enter your name", yourName: "Your name", save: "Save", playAgain: "Play again", closeLeaderboard: "Close leaderboard", closeSurprise: "Close surprise", showLeaderboard: "Show leaderboard", leaderboard: "Leaderboard", czechLanguage: "Czech", englishLanguage: "English", secretFind: "Secret found", vikingMessage: "Haaland is ready for the next round.", wrongAnswer: "Wrong. The correct answer was {team}.", correctAnswer: "Correct! {team} was the right club.", enterNameToSave: "Enter your name to save your score.", scoreSaved: "Score saved! {name} has {score} points.", kitPreview: "Kit preview", jersey: "kit", soccerBall: "Soccer ball", redCard: "Red card"
+  }
+};
 
 const scoreEl = document.getElementById("score");
+const vikingBonusEl = document.getElementById("vikingBonus");
 const livesEl = document.getElementById("lives");
 const livesStatEl = document.getElementById("livesStat");
 const progressEl = document.getElementById("progress");
@@ -62,6 +71,10 @@ const showLeaderboardBtn = document.getElementById("showLeaderboardBtn");
 const leaderboardModal = document.getElementById("leaderboardModal");
 const modalLeaderboardList = document.getElementById("modalLeaderboardList");
 const closeLeaderboardBtn = document.getElementById("closeLeaderboardBtn");
+const easterEggTrigger = document.getElementById("easterEggTrigger");
+const easterEggModal = document.getElementById("easterEggModal");
+const closeEasterEggBtn = document.getElementById("closeEasterEggBtn");
+const languageButtons = document.querySelectorAll("[data-language]");
 
 let score = 0;
 let lives = 3;
@@ -70,6 +83,43 @@ let usedIndexes = [];
 let currentTeam = null;
 let answered = false;
 let gameOverState = false;
+let scoreSaved = false;
+let vikingBonusActive = false;
+let language = "cs";
+
+function t(key, values = {}) {
+  return translations[language][key].replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
+}
+
+function applyLanguage() {
+  document.documentElement.lang = language;
+  document.title = t("gameTitle");
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = t(element.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach((element) => {
+    element.title = t(element.dataset.i18nTitle);
+  });
+  languageButtons.forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.language === language));
+  });
+  if (!answered && !gameOverState) {
+    messageEl.textContent = t("guessPrompt");
+  }
+  if (!nextBtn.classList.contains("hidden")) {
+    nextBtn.textContent = lives <= 0 || roundIndex >= TOTAL_ROUNDS ? t("endGame") : t("nextRound");
+  }
+  if (currentTeam) {
+    setKitImage(currentTeam);
+  }
+  updateLivesDisplay();
+}
 
 function normalizeText(value) {
   return value
@@ -179,6 +229,18 @@ async function saveLeaderboardEntry(name, score) {
   saveLeaderboard(entries.sort((a, b) => b.score - a.score).slice(0, 15));
 }
 
+async function savePendingScore() {
+  const name = playerNameInput.value.trim();
+
+  if (scoreSaved || !gameOverState || score < MIN_SCORE_FOR_LEADERBOARD || !name) {
+    return false;
+  }
+
+  scoreSaved = true;
+  await saveLeaderboardEntry(name, score);
+  return true;
+}
+
 async function renderLeaderboard() {
   const entries = await readLeaderboard();
   const sorted = [...entries].sort((a, b) => b.score - a.score).slice(0, 15);
@@ -206,7 +268,7 @@ function setKitImage(team) {
   // Create image element for the jersey
   const img = document.createElement('img');
   img.src = team.image;
-  img.alt = `${team.name} jersey`;
+  img.alt = `${team.name} ${t("jersey")}`;
   img.className = 'jersey-image';
   kitPreview.appendChild(img);
 }
@@ -231,8 +293,8 @@ function updateLivesDisplay() {
   if (gameOverState || lives <= 0) {
     const card = document.createElement('div');
     card.className = 'referee-card';
-    card.title = 'Red card';
-    card.setAttribute('aria-label', 'Red card');
+    card.title = t("redCard");
+    card.setAttribute('aria-label', t("redCard"));
     livesEl.appendChild(card);
     return;
   }
@@ -240,7 +302,7 @@ function updateLivesDisplay() {
   for (let i = 0; i < lives; i++) {
     const img = document.createElement('img');
     img.src = './jerseys/ball.png';
-    img.alt = 'Soccer ball';
+    img.alt = t("soccerBall");
     img.className = 'soccer-ball';
     livesEl.appendChild(img);
   }
@@ -301,7 +363,7 @@ function startRound() {
   currentTeam = nextTeam;
   roundIndex += 1;
   nextBtn.classList.add("hidden");
-  messageEl.textContent = "Uhodni klub podle dresu.";
+  messageEl.textContent = t("guessPrompt");
   messageEl.style.color = "#9fb8d0";
   setKitImage(currentTeam);
   renderAnswerOptions();
@@ -309,13 +371,13 @@ function startRound() {
 }
 
 function handleCorrectGuess() {
-  score += 10;
+  score += vikingBonusActive ? 20 : 10;
   guessedCorrect(true);
 }
 
 function handleWrongGuess() {
   lives -= 1;
-  messageEl.textContent = `Špatně. Správná odpověď byla ${currentTeam.name}.`;
+  messageEl.textContent = t("wrongAnswer", { team: currentTeam.name });
   messageEl.style.color = "#ffb4c8";
   guessedCorrect(false);
 }
@@ -325,12 +387,14 @@ function guessedCorrect(isCorrect) {
   answerOptions.querySelectorAll("button").forEach((button) => {
     button.disabled = true;
     if (button.textContent === currentTeam.name) {
-      button.classList.add("selected");
+      button.classList.add("correct");
+    } else if (!isCorrect && button.classList.contains("selected")) {
+      button.classList.add("incorrect");
     }
   });
 
   if (isCorrect) {
-    messageEl.textContent = `Správně! ${currentTeam.name} byl ten pravý klub.`;
+    messageEl.textContent = t("correctAnswer", { team: currentTeam.name });
     messageEl.style.color = "#9ef0da";
 
     if (lives <= 0 || roundIndex >= TOTAL_ROUNDS) {
@@ -346,9 +410,9 @@ function guessedCorrect(isCorrect) {
   }
 
   if (lives <= 0 || roundIndex >= TOTAL_ROUNDS) {
-    nextBtn.textContent = "Konec hry";
+    nextBtn.textContent = t("endGame");
   } else {
-    nextBtn.textContent = "Další kolo";
+    nextBtn.textContent = t("nextRound");
   }
 
   nextBtn.classList.remove("hidden");
@@ -382,10 +446,11 @@ function resetGame() {
   currentTeam = null;
   answered = false;
   gameOverState = false;
+  scoreSaved = false;
   gameOverScreen.classList.add("hidden");
   gameScreen.classList.remove("hidden");
   livesStatEl.classList.remove("hidden");
-  nextBtn.textContent = "Další kolo";
+  nextBtn.textContent = t("nextRound");
   saveScoreForm.classList.add("hidden");
   playerNameInput.value = "";
   answerOptions.innerHTML = "";
@@ -407,21 +472,27 @@ saveScoreForm.addEventListener("submit", async (event) => {
   const name = playerNameInput.value.trim();
 
   if (!name) {
-    messageEl.textContent = "Zadej jméno, abys mohl uložit výsledek.";
+    messageEl.textContent = t("enterNameToSave");
     messageEl.style.color = "#ffcf5a";
     return;
   }
 
-  await saveLeaderboardEntry(name, score);
+  const saved = await savePendingScore();
   await renderLeaderboard();
-  saveScoreForm.classList.add("hidden");
-  messageEl.textContent = `Výsledek uložen! ${name} má ${score} bodů.`;
-  messageEl.style.color = "#9ef0da";
+  if (saved) {
+    saveScoreForm.classList.add("hidden");
+    messageEl.textContent = t("scoreSaved", { name, score });
+    messageEl.style.color = "#9ef0da";
+  }
 });
 
-restartBtn.addEventListener("click", resetGame);
+restartBtn.addEventListener("click", async () => {
+  await savePendingScore();
+  resetGame();
+});
 
 showLeaderboardBtn.addEventListener("click", async () => {
+  await savePendingScore();
   await renderLeaderboard();
   leaderboardModal.classList.remove("hidden");
   closeLeaderboardBtn.focus();
@@ -437,5 +508,39 @@ leaderboardModal.addEventListener("click", (event) => {
   }
 });
 
+easterEggTrigger.addEventListener("click", () => {
+  vikingBonusActive = true;
+  vikingBonusEl.classList.remove("hidden");
+  easterEggModal.classList.remove("hidden");
+  closeEasterEggBtn.focus();
+});
+
+function closeEasterEgg() {
+  easterEggModal.classList.add("hidden");
+  easterEggTrigger.focus();
+}
+
+closeEasterEggBtn.addEventListener("click", closeEasterEgg);
+
+easterEggModal.addEventListener("click", (event) => {
+  if (event.target === easterEggModal) {
+    closeEasterEgg();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !easterEggModal.classList.contains("hidden")) {
+    closeEasterEgg();
+  }
+});
+
+languageButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    language = button.dataset.language;
+    applyLanguage();
+  });
+});
+
+applyLanguage();
 renderLeaderboard();
 resetGame();

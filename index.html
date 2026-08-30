@@ -3,16 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Champions League Kit Quiz</title>
-    <link rel="stylesheet" href="styles.css?v=2026-08-30-36" />
+    <title>Fotbalový kvíz</title>
+    <link rel="stylesheet" href="styles.css?v=2026-08-30-language" />
   </head>
   <body>
     <div class="app">
       <header class="topbar">
-        <div class="badge badge--trophy" aria-label="Champions League trophy">
+        <button id="easterEggTrigger" type="button" class="badge badge--trophy" aria-label="Champions League trophy">
           <img src="./jerseys/trophy.png" alt="Champions League trophy" />
+        </button>
+        <div class="header-center">
+          <div class="header-title" data-i18n="gameTitle">Fotbalový kvíz</div>
+          <div class="language-switch" aria-label="Language selection">
+            <button type="button" data-language="cs" aria-pressed="true" aria-label="Čeština" title="Čeština" data-i18n-aria-label="czechLanguage" data-i18n-title="czechLanguage"><img src="https://flagcdn.com/w40/cz.png" alt="" /></button>
+            <button type="button" data-language="en" aria-pressed="false" aria-label="English" title="English" data-i18n-aria-label="englishLanguage" data-i18n-title="englishLanguage"><img src="https://flagcdn.com/w40/gb.png" alt="" /></button>
+          </div>
         </div>
-        <div class="header-title">Fotbalový kvíz</div>
         <div class="badge" aria-label="Champions League logo">
           <img src="./jerseys/league_logo.png" alt="Champions League logo" />
         </div>
@@ -20,15 +26,15 @@
 
       <div class="hud">
         <div class="stat">
-          <span class="label">Skóre</span>
-          <strong id="score">0</strong>
+          <span class="label" data-i18n="score">Skóre</span>
+          <strong id="score">0</strong><span id="vikingBonus" class="viking-bonus hidden">2×</span>
         </div>
         <div id="livesStat" class="stat">
-          <span class="label">Životy</span>
+          <span class="label" data-i18n="lives">Životy</span>
           <div id="lives" class="lives-container"></div>
         </div>
         <div class="stat">
-          <span class="label">Kolo</span>
+          <span class="label" data-i18n="round">Kolo</span>
           <strong id="progress">1 / 8</strong>
         </div>
       </div>
@@ -36,56 +42,66 @@
       <main id="gameScreen" class="panel game-panel">
         <div class="kit-wrap">
           <div class="kit-card">
-            <div id="kitPreview" class="jersey" aria-label="Preview dresu"></div>
+            <div id="kitPreview" class="jersey" aria-label="Náhled dresu" data-i18n-aria-label="kitPreview"></div>
           </div>
         </div>
 
-        <p id="message" class="message">Uhodni klub podle dresu.</p>
+        <p id="message" class="message" data-i18n="guessPrompt">Uhodni klub podle dresu.</p>
 
         <div id="answerOptions" class="answer-options" aria-live="polite"></div>
 
-        <button id="nextBtn" type="button" class="secondary hidden">Další kolo</button>
+        <button id="nextBtn" type="button" class="secondary hidden" data-i18n="nextRound">Další kolo</button>
       </main>
 
       <section id="gameOverScreen" class="panel hidden">
         <h2>Game over</h2>
-        <p class="final-score">Tvoje skóre: <strong id="finalScore">0</strong></p>
+        <p class="final-score"><span data-i18n="yourScore">Tvoje skóre</span>: <strong id="finalScore">0</strong></p>
 
         <div id="leaderboardBox" class="leaderboard-box">
           <h3>Leaderboard</h3>
 
           <form id="saveScoreForm" class="save-score hidden">
-            <label for="playerName">Zadej jméno</label>
+            <label for="playerName" data-i18n="enterName">Zadej jméno</label>
             <div class="name-row">
-              <input id="playerName" type="text" maxlength="20" placeholder="Tvoje jméno" />
-              <button type="submit">Uložit</button>
+              <input id="playerName" type="text" maxlength="20" placeholder="Tvoje jméno" data-i18n-placeholder="yourName" />
+              <button type="submit" data-i18n="save">Uložit</button>
             </div>
           </form>
 
           <ul id="leaderboardList" class="leaderboard-list"></ul>
         </div>
 
-        <button id="restartBtn" type="button" class="primary">Hrát znovu</button>
+        <button id="restartBtn" type="button" class="primary" data-i18n="playAgain">Hrát znovu</button>
       </section>
 
       <section id="leaderboardModal" class="leaderboard-modal hidden" role="dialog" aria-modal="true" aria-labelledby="leaderboardModalTitle">
         <div class="leaderboard-modal__content">
           <div class="leaderboard-modal__header">
             <h2 id="leaderboardModalTitle">Leaderboard</h2>
-            <button id="closeLeaderboardBtn" type="button" class="close-leaderboard" aria-label="Zavřít leaderboard">&times;</button>
+            <button id="closeLeaderboardBtn" type="button" class="close-leaderboard" aria-label="Zavřít leaderboard" data-i18n-aria-label="closeLeaderboard">&times;</button>
           </div>
           <ul id="modalLeaderboardList" class="leaderboard-list"></ul>
         </div>
       </section>
 
+      <section id="easterEggModal" class="easter-egg-modal hidden" role="dialog" aria-modal="true" aria-labelledby="easterEggTitle">
+        <div class="easter-egg-modal__content">
+          <button id="closeEasterEggBtn" type="button" class="close-easter-egg" aria-label="Zavřít překvapení" data-i18n-aria-label="closeSurprise">&times;</button>
+          <p class="easter-egg-modal__eyebrow" data-i18n="secretFind">Tajný úlovek</p>
+          <h2 id="easterEggTitle">Viking mode</h2>
+          <img class="easter-egg-modal__image" src="./jerseys/Haaland.png" alt="Erling Haaland" />
+          <p data-i18n="vikingMessage">Haaland je připraven na další kolo.</p>
+        </div>
+      </section>
+
       <div class="game-credits">crafted by <span>Parx</span> & <span>IceCry</span></div>
-      <button id="showLeaderboardBtn" type="button" class="leaderboard-trigger" aria-label="Zobrazit leaderboard" title="Leaderboard">
+      <button id="showLeaderboardBtn" type="button" class="leaderboard-trigger" aria-label="Zobrazit leaderboard" title="Leaderboard" data-i18n-aria-label="showLeaderboard" data-i18n-title="leaderboard">
         <span class="leaderboard-icon" aria-hidden="true">
           <span></span><span></span><span></span>
         </span>
       </button>
     </div>
 
-    <script src="script.js?v=2026-08-30-36"></script>
+    <script src="script.js?v=2026-08-30-language"></script>
   </body>
 </html>
