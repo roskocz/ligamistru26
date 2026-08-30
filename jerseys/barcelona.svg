@@ -1,0 +1,18 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="bcn-stripes" x="0" y="0" width="16" height="300" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="8" height="300" fill="#004D98"/>
+      <rect x="8" y="0" width="8" height="300" fill="#A50044"/>
+    </pattern>
+  </defs>
+  <!-- Body -->
+  <rect x="40" y="60" width="120" height="180" rx="12" fill="url(#bcn-stripes)" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+  <!-- Left sleeve -->
+  <rect x="15" y="85" width="25" height="50" rx="4" fill="#004D98" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+  <!-- Right sleeve -->
+  <rect x="160" y="85" width="25" height="50" rx="4" fill="#004D98" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+  <!-- Collar -->
+  <path d="M 95 60 L 105 60 L 105 75 L 95 75 Z" fill="#004D98" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+  <!-- Sponsor badge area -->
+  <circle cx="100" cy="115" r="16" fill="rgba(245,214,66,0.3)" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+</svg>

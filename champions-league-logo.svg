@@ -1,0 +1,18 @@
+<svg width="220" height="62" viewBox="0 0 220 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldGrad" x1="20" y1="6" x2="190" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D3B8C"/>
+      <stop offset="1" stop-color="#102E7A"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="90" y1="10" x2="130" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBE38A"/>
+      <stop offset="1" stop-color="#C79618"/>
+    </linearGradient>
+  </defs>
+  <path d="M18 8C18 6.89543 18.8954 6 20 6H200C201.105 6 202 6.89543 202 8V32.5C202 42.5 192.3 50.8 180.7 54.8L164.5 60.1C154.8 63.1 144.7 64.8 134.5 64.8C124.2 64.8 114.1 63.1 104.5 60.1L88.3 54.8C76.7 50.8 67 42.5 67 32.5V8H18Z" fill="url(#shieldGrad)"/>
+  <path d="M37 14H183V32.5C183 39.4 176.5 45.1 170.3 47.7L158.6 52.7C150.8 55.8 142.4 57.5 134 57.5C125.7 57.5 117.3 55.8 109.5 52.7L97.8 47.7C91.6 45.1 85 39.4 85 32.5V14H37Z" fill="#0A264E" fill-opacity="0.38"/>
+  <path d="M110 15L113.6 23.2L122.5 23.2L115.4 28.4L118.8 36.6L110 31.5L101.2 36.6L104.6 28.4L97.5 23.2H106.4L110 15Z" fill="url(#goldGrad)"/>
+  <path d="M35 22H80M35 29H80M35 36H80" stroke="#E7F6FF" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <path d="M140 22H185M140 29H185M140 36H185" stroke="#E7F6FF" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <text x="110" y="51" text-anchor="middle" fill="#F7F9FF" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="700" letter-spacing="1.1">CHAMPIONS</text>
+</svg>

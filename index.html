@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Champions League Kit Quiz</title>
+    <link rel="stylesheet" href="styles.css?v=2026-08-30-36" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="badge badge--trophy" aria-label="Champions League trophy">
+          <img src="./jerseys/trophy.png" alt="Champions League trophy" />
+        </div>
+        <div class="header-title">Fotbalový kvíz</div>
+        <div class="badge" aria-label="Champions League logo">
+          <img src="./jerseys/league_logo.png" alt="Champions League logo" />
+        </div>
+      </header>
+
+      <div class="hud">
+        <div class="stat">
+          <span class="label">Skóre</span>
+          <strong id="score">0</strong>
+        </div>
+        <div id="livesStat" class="stat">
+          <span class="label">Životy</span>
+          <div id="lives" class="lives-container"></div>
+        </div>
+        <div class="stat">
+          <span class="label">Kolo</span>
+          <strong id="progress">1 / 8</strong>
+        </div>
+      </div>
+
+      <main id="gameScreen" class="panel game-panel">
+        <div class="kit-wrap">
+          <div class="kit-card">
+            <div id="kitPreview" class="jersey" aria-label="Preview dresu"></div>
+          </div>
+        </div>
+
+        <p id="message" class="message">Uhodni klub podle dresu.</p>
+
+        <div id="answerOptions" class="answer-options" aria-live="polite"></div>
+
+        <button id="nextBtn" type="button" class="secondary hidden">Další kolo</button>
+      </main>
+
+      <section id="gameOverScreen" class="panel hidden">
+        <h2>Game over</h2>
+        <p class="final-score">Tvoje skóre: <strong id="finalScore">0</strong></p>
+
+        <div id="leaderboardBox" class="leaderboard-box">
+          <h3>Leaderboard</h3>
+
+          <form id="saveScoreForm" class="save-score hidden">
+            <label for="playerName">Zadej jméno</label>
+            <div class="name-row">
+              <input id="playerName" type="text" maxlength="20" placeholder="Tvoje jméno" />
+              <button type="submit">Uložit</button>
+            </div>
+          </form>
+
+          <ul id="leaderboardList" class="leaderboard-list"></ul>
+        </div>
+
+        <button id="restartBtn" type="button" class="primary">Hrát znovu</button>
+      </section>
+
+      <div class="game-credits">crafted by <span>Parx</span> & <span>IceCry</span></div>
+    </div>
+
+    <script src="script.js?v=2026-08-30-36"></script>
+  </body>
+</html>
