@@ -58,6 +58,10 @@ const leaderboardList = document.getElementById("leaderboardList");
 const saveScoreForm = document.getElementById("saveScoreForm");
 const playerNameInput = document.getElementById("playerName");
 const restartBtn = document.getElementById("restartBtn");
+const showLeaderboardBtn = document.getElementById("showLeaderboardBtn");
+const leaderboardModal = document.getElementById("leaderboardModal");
+const modalLeaderboardList = document.getElementById("modalLeaderboardList");
+const closeLeaderboardBtn = document.getElementById("closeLeaderboardBtn");
 
 let score = 0;
 let lives = 3;
@@ -179,7 +183,7 @@ async function renderLeaderboard() {
   const entries = await readLeaderboard();
   const sorted = [...entries].sort((a, b) => b.score - a.score).slice(0, 15);
 
-  leaderboardList.innerHTML = sorted
+  const markup = sorted
     .map(
       (entry, index) => `
         <li>
@@ -190,6 +194,9 @@ async function renderLeaderboard() {
       `
     )
     .join("");
+
+  leaderboardList.innerHTML = markup;
+  modalLeaderboardList.innerHTML = markup;
 }
 
 function setKitImage(team) {
@@ -413,6 +420,22 @@ saveScoreForm.addEventListener("submit", async (event) => {
 });
 
 restartBtn.addEventListener("click", resetGame);
+
+showLeaderboardBtn.addEventListener("click", async () => {
+  await renderLeaderboard();
+  leaderboardModal.classList.remove("hidden");
+  closeLeaderboardBtn.focus();
+});
+
+closeLeaderboardBtn.addEventListener("click", () => {
+  leaderboardModal.classList.add("hidden");
+});
+
+leaderboardModal.addEventListener("click", (event) => {
+  if (event.target === leaderboardModal) {
+    leaderboardModal.classList.add("hidden");
+  }
+});
 
 renderLeaderboard();
 resetGame();
