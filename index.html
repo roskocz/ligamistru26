@@ -14,10 +14,6 @@
         </button>
         <div class="header-center">
           <div class="header-title" data-i18n="gameTitle">Fotbalový kvíz</div>
-          <div class="language-switch" aria-label="Language selection">
-            <button type="button" data-language="cs" aria-pressed="true" aria-label="Čeština" title="Čeština" data-i18n-aria-label="czechLanguage" data-i18n-title="czechLanguage"><img src="https://flagcdn.com/w40/cz.png" alt="" /></button>
-            <button type="button" data-language="en" aria-pressed="false" aria-label="English" title="English" data-i18n-aria-label="englishLanguage" data-i18n-title="englishLanguage"><img src="https://flagcdn.com/w40/gb.png" alt="" /></button>
-          </div>
         </div>
         <div class="badge" aria-label="Champions League logo">
           <img src="./jerseys/league_logo.png" alt="Champions League logo" />
@@ -95,13 +91,17 @@
       </section>
 
       <div class="game-credits">crafted by <span>Parx</span> & <span>IceCry</span></div>
-      <button id="showLeaderboardBtn" type="button" class="leaderboard-trigger" aria-label="Zobrazit leaderboard" title="Leaderboard" data-i18n-aria-label="showLeaderboard" data-i18n-title="leaderboard">
-        <span class="leaderboard-icon" aria-hidden="true">
-          <span></span><span></span><span></span>
-        </span>
-      </button>
+      <div class="bottom-controls" aria-label="Language selection">
+        <button type="button" class="language-button" data-language="cs" aria-pressed="true" aria-label="Čeština" title="Čeština" data-i18n-aria-label="czechLanguage" data-i18n-title="czechLanguage"><img src="https://flagcdn.com/w40/cz.png" alt="" /></button>
+        <button id="showLeaderboardBtn" type="button" class="leaderboard-trigger" aria-label="Zobrazit leaderboard" title="Leaderboard" data-i18n-aria-label="showLeaderboard" data-i18n-title="leaderboard">
+          <span class="leaderboard-icon" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+        <button type="button" class="language-button" data-language="en" aria-pressed="false" aria-label="English" title="English" data-i18n-aria-label="englishLanguage" data-i18n-title="englishLanguage"><img src="https://flagcdn.com/w40/gb.png" alt="" /></button>
+      </div>
     </div>
 
-    <script src="script.js?v=2026-08-30-language"></script>
+    <script src="script.js?v=2026-08-30-bottom-controls"></script>
   </body>
 </html>
