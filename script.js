@@ -39,6 +39,9 @@ const clubs = [
 const TOTAL_ROUNDS = clubs.length;
 const MIN_SCORE_FOR_LEADERBOARD = 30;
 const LEADERBOARD_KEY = "cl-kit-quiz-leaderboard";
+const SUPABASE_URL = "https://wlupiolmqtuotnfoeanj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_SbambzuzeMD5cnAxeaGZBA_EPhA5Ji2";
+const USE_SUPABASE = SUPABASE_URL && SUPABASE_URL !== "https://YOUR_PROJECT_REF.supabase.co" && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
 
 const scoreEl = document.getElementById("score");
 const livesEl = document.getElementById("lives");
@@ -92,11 +95,43 @@ function getDefaultLeaderboard() {
   ];
 }
 
-function readLeaderboard() {
+async function readLeaderboard() {
+  if (USE_SUPABASE) {
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/leaderboard?select=name,score&order=score.desc&limit=15`,
+        {
+          method: "GET",
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Supabase leaderboard request failed");
+      }
+
+      const data = await response.json();
+      const entries = Array.isArray(data) ? data : [];
+
+      if (entries.length) {
+        return entries
+          .map((entry) => ({ name: entry.name, score: Number(entry.score ?? 0) }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 15);
+      }
+    } catch (error) {
+      console.warn("Supabase leaderboard unavailable, using local fallback.", error);
+    }
+  }
+
   const raw = localStorage.getItem(LEADERBOARD_KEY);
   if (!raw) {
-    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(getDefaultLeaderboard()));
-    return getDefaultLeaderboard();
+    const defaultEntries = getDefaultLeaderboard();
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(defaultEntries));
+    return defaultEntries;
   }
 
   try {
@@ -111,12 +146,40 @@ function saveLeaderboard(entries) {
   localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
 }
 
-function renderLeaderboard() {
-  const entries = readLeaderboard()
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 15);
+async function saveLeaderboardEntry(name, score) {
+  if (USE_SUPABASE) {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ name, score }),
+      });
 
-  leaderboardList.innerHTML = entries
+      if (!response.ok) {
+        throw new Error("Supabase insert failed");
+      }
+
+      return;
+    } catch (error) {
+      console.warn("Supabase save failed, using local fallback.", error);
+    }
+  }
+
+  const existing = readLeaderboard();
+  const entries = Array.isArray(existing) ? existing : [];
+  entries.push({ name, score });
+  saveLeaderboard(entries.sort((a, b) => b.score - a.score).slice(0, 15));
+}
+
+async function renderLeaderboard() {
+  const entries = await readLeaderboard();
+  const sorted = [...entries].sort((a, b) => b.score - a.score).slice(0, 15);
+
+  leaderboardList.innerHTML = sorted
     .map(
       (entry, index) => `
         <li>
@@ -332,7 +395,7 @@ nextBtn.addEventListener("click", () => {
   startRound();
 });
 
-saveScoreForm.addEventListener("submit", (event) => {
+saveScoreForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const name = playerNameInput.value.trim();
 
@@ -342,14 +405,8 @@ saveScoreForm.addEventListener("submit", (event) => {
     return;
   }
 
-  const existing = readLeaderboard();
-  existing.push({ name, score });
-  const sorted = existing
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 15);
-
-  saveLeaderboard(sorted);
-  renderLeaderboard();
+  await saveLeaderboardEntry(name, score);
+  await renderLeaderboard();
   saveScoreForm.classList.add("hidden");
   messageEl.textContent = `Výsledek uložen! ${name} má ${score} bodů.`;
   messageEl.style.color = "#9ef0da";
