@@ -28,7 +28,6 @@ const clubs = [
   { name: "RC Lens", image: "./jerseys/rc-lens-2026-27-home-kit.jpg" },
   { name: "Real Betis", image: "./jerseys/real-betis-2026-27-home-kit.jpg" },
   { name: "Real Madrid", image: "./jerseys/real-madrid-2026-27-home-kit.jpg" },
-  { name: "Salzburg", image: "./jerseys/Salzburg-cf-2026-27-home-kit.jpg" },
   { name: "Shakhtar Donetsk", image: "./jerseys/shakhtar-donetsk-2026-27-home-kit.jpg" },
   { name: "Slavia Praha", image: "./jerseys/slavia-praha-2026-27-home-kit.jpg" },
   { name: "Sporting CP", image: "./jerseys/sporting-cp-2026-27-home-kit.jpg" },
