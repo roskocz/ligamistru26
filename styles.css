@@ -727,6 +727,11 @@ button:active {
     margin-bottom: 12px;
   }
 
+  .header-center {
+    flex-basis: 100%;
+    order: 2;
+  }
+
   .header-title {
     font-size: 0.9rem;
     letter-spacing: 0.12em;
